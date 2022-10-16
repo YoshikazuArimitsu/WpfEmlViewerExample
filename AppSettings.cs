@@ -8,5 +8,6 @@ namespace WpfEmlViewerExample
 {
     public class AppSettings
     {
+        public string? EmlFile { get; set; }
     }
 }

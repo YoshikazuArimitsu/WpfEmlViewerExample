@@ -3,13 +3,14 @@ using Microsoft.Extensions.Hosting;
 using Wpf.Extensions.Hosting;
 using WpfEmlViewerExample;
 using Serilog;
+using WpfEmlViewerExample.Services;
 
 // Create a builder by specifying the application and main window.
 var builder = WpfApplication<App, MainWindow>.CreateBuilder(args);
 
 // Configure dependency injection.
 builder.Services.AddTransient<MainWindowViewModel>();
-builder.Services.AddTransient<EmailViewViewModel>();
+builder.Services.AddSingleton<EmlExtractorService>();
 
 // Configure the settings.
 // Injecting IOptions<MySettings> from appsetting.json.

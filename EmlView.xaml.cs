@@ -62,17 +62,40 @@ const hostCallback = (arg) => {
     chrome.webview.hostObjects.class.HostCallback(arg);
 }
 
+// TextNode -> AnchorNode 置き換え
+// 対象文字列を**含む** テキストノードの対象文字列部分のみをリンクに置き換える為、
+// TextNode -> Span要素 ([対象文字列より前の部分], [対象文字列], [対象文字列より後の部分]) への
+// 置き換えを行う。
+// モノによってはレイアウトが崩れるかもしれない。
+const replaceTextNode = (n, p) => {
+    const targetNode = document.createElement('span');
+
+    const splitContent = n.textContent.split(p);
+
+    const beforeNode = n.cloneNode();
+    beforeNode.textContent = splitContent[0];
+
+    const anchorNode = document.createElement('a');
+    anchorNode.href = `javascript:hostCallback('${p}');`;
+    anchorNode.textContent = p;
+
+    const afterNode = n.cloneNode();
+    afterNode.textContent = splitContent[1];
+
+    targetNode.appendChild(beforeNode);
+    targetNode.appendChild(anchorNode);
+    targetNode.appendChild(afterNode);
+
+    n.replaceWith(targetNode);
+}
+
 // 指定文字列を含むテキストノードを <a～ に差し替える
 const replaceHostCallbackNode = (pattern) => {
     const results = getTextNodes(pattern)
 
     results.forEach( (r) => {
-        const anchor = document.createElement('a');
-        anchor.href = `javascript:hostCallback('${pattern}');`;
-        anchor.textContent = r.textContent;
-        r.replaceWith(anchor);
+        replaceTextNode(r, pattern);
     });
-
 }
 
 // dom構築後、パターンを C# 側呼び出しのリンクに置換

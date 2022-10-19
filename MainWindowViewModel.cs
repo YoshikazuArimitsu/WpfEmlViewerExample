@@ -15,6 +15,13 @@ namespace WpfEmlViewerExample
     {
         private readonly AppSettings _settings;
 
+        public string[]? _linkPatterns;
+        public string[]? LinkPatterns
+        {
+            get { return _linkPatterns; }
+            set { _linkPatterns = value; }
+        }
+
         public string? _source;
         public string? Source {
             get
@@ -46,6 +53,7 @@ namespace WpfEmlViewerExample
                 Source = EmlContent.HtmlUri;
             }
 
+            LinkPatterns = _settings.LinkPatterns;
         }
     }
 }

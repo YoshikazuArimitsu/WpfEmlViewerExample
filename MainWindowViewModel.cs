@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -11,8 +13,17 @@ using WpfEmlViewerExample.Services;
 
 namespace WpfEmlViewerExample
 {
-    public class MainWindowViewModel
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
         private readonly AppSettings _settings;
 
         public string[]? _linkPatterns;
@@ -31,6 +42,7 @@ namespace WpfEmlViewerExample
             set
             {
                 _source = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -48,10 +60,11 @@ namespace WpfEmlViewerExample
             _settings = settings.Value;
             logger.LogInformation($"new {nameof(MainWindowViewModel)}");
 
-            using (var fs = File.OpenRead(_settings.EmlFile!)) {
-                EmlContent = extractor.Extract(fs);
-                Source = EmlContent.HtmlUri;
-            }
+            //using (var fs = File.OpenRead(_settings.EmlFile!)) {
+            //    EmlContent = extractor.Extract(fs);
+            //    Source = EmlContent.HtmlUri;
+            //}
+            Source = _settings.EmlFile;
 
             LinkPatterns = _settings.LinkPatterns;
         }

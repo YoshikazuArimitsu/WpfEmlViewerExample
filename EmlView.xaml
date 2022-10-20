@@ -7,9 +7,10 @@
              xmlns:local="clr-namespace:WpfEmlViewerExample"
              DataContextChanged="UserControl_DataContextChanged"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="EmlViewControl">
     <Grid>
-        <wv2:WebView2 Name="webView" Source="{Binding Source}" >
+        <wv2:WebView2 Name="webView" Source="{Binding Path=SourceUri, ElementName=EmlViewControl}" >
         </wv2:WebView2>
     </Grid>
 </UserControl>

@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <local:EmlView Patterns="{Binding LinkPatterns}" LinkClicked="EmlView_LinkClicked"/>
+        <local:EmlView Source="{Binding Source}" Patterns="{Binding LinkPatterns}" LinkClicked="EmlView_LinkClicked"/>
     </Grid>
 </Window>

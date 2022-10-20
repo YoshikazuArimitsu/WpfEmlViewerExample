@@ -126,5 +126,14 @@ namespace WpfEmlViewerExample.Services
 
             return content;
         }
+
+        public EmlContent LoadEml(string path)
+        {
+            using (var fs = File.OpenRead(path))
+            {
+                return Extract(fs);
+            }
+        }
+
     }
 }

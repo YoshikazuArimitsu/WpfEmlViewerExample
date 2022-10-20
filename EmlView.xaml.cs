@@ -13,9 +13,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfEmlViewerExample.Services;
 
 namespace WpfEmlViewerExample
 {
+
     public class LinkClickedEventArgs : RoutedEventArgs
     {
         private readonly string _href;
@@ -119,9 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         private Task<string>? _embedScriptId;
         private EmlViewHostedObject _hostedObject;
+        private EmlContent _eml;
 
         /// <summary>
-        /// 開くURL
+        /// 開くEMLファイルのパス
         /// </summary>
         public string Source
         {
@@ -136,7 +139,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof(string), typeof(EmlView), new PropertyMetadata(null));
+            DependencyProperty.Register("Source", typeof(string), typeof(EmlView),
+                        new FrameworkPropertyMetadata("Source", new PropertyChangedCallback(OnSourceChanged)));
+
+        /// <summary>
+        /// 開くURL
+        /// </summary>
+        public string SourceUri
+        {
+            get
+            {
+                return (string)GetValue(SourceUriProperty);
+            }
+            set
+            {
+                SetValue(SourceUriProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty SourceUriProperty =
+            DependencyProperty.Register("SourceUri", typeof(string), typeof(EmlView), new PropertyMetadata(null));
 
         /// <summary>
         /// リンクに置換する対象
@@ -155,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         public static readonly DependencyProperty PatternProperty =
             DependencyProperty.Register("Patterns", typeof(string[]), typeof(EmlView), new PropertyMetadata(new string[0]));
-
         /// <summary>
         /// 置換リンクを踏んだ時のイベント
         /// </summary>
@@ -226,6 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             var eventArgs = new LinkClickedEventArgs(LinkClickedEvent, arg);
             RaiseEvent(eventArgs);
+        }
+
+        private static void OnSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            EmlView? ctrl = obj as EmlView;
+            if (ctrl != null)
+            {
+                EmlExtractorService es = new EmlExtractorService(null);
+                ctrl._eml = es.LoadEml(ctrl.Source);
+                ctrl.SourceUri = ctrl._eml.HtmlUri;
+            }
         }
     }
 }

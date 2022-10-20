@@ -16,6 +16,19 @@ using System.Windows.Shapes;
 
 namespace WpfEmlViewerExample
 {
+    public class LinkClickedEventArgs : RoutedEventArgs
+    {
+        private readonly string _href;
+
+        public string Href
+        {
+            get { return _href; }
+        }
+
+        public LinkClickedEventArgs(RoutedEvent routedEvent, string href) : base(routedEvent) {
+            _href = href;
+        }
+    }
 
     /// <summary>
     /// WebViewに埋め込むホステッドオブジェクト
@@ -143,6 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
         public static readonly DependencyProperty PatternProperty =
             DependencyProperty.Register("Patterns", typeof(string[]), typeof(EmlView), new PropertyMetadata(new string[0]));
 
+        /// <summary>
+        /// 置換リンクを踏んだ時のイベント
+        /// </summary>
+        public static readonly RoutedEvent LinkClickedEvent = EventManager.RegisterRoutedEvent(
+            name: "LinkClicked",
+            routingStrategy: RoutingStrategy.Bubble,
+            handlerType: typeof(RoutedEventHandler),
+            ownerType: typeof(EmlView));
+
+        public event RoutedEventHandler LinkClicked
+        {
+            add { AddHandler(LinkClickedEvent, value); }
+            remove { RemoveHandler(LinkClickedEvent, value); }
+        }
 
         public EmlView()
         {
@@ -197,7 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         public void HostCallback(string arg)
         {
-            MessageBox.Show(arg);
+            var eventArgs = new LinkClickedEventArgs(LinkClickedEvent, arg);
+            RaiseEvent(eventArgs);
         }
     }
 }

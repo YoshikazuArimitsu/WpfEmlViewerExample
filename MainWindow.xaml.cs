@@ -25,5 +25,11 @@ namespace WpfEmlViewerExample
             InitializeComponent();
             DataContext = mainWindowViewModel;
         }
+
+        private void EmlView_LinkClicked(object sender, RoutedEventArgs e)
+        {
+            var arg = e as LinkClickedEventArgs;
+            MessageBox.Show(arg!.Href);
+        }
     }
 }
